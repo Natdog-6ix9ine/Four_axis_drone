@@ -5,22 +5,30 @@
 //定义一个结构体，用于存储卡尔曼滤波器的参数
 typedef struct
 {
-    float Q_angle; //角度的过程噪声
-    float Q_bias;  //角速度的过程噪声
-    float R_measure; //测量噪声
-    float angle; //角度
-    float bias; //角速度
-    float rate; //角速度
+    float Q[2][2]; //角度的过程噪声
+    float R[2][2]; //测量噪声
     
     float F[2][2]; //状态转移矩阵
-    float B[2][1]; //控制输入矩阵
+    float B[2][2]; //控制输入矩阵
     float H[2]; //观测矩阵
 
     float P[2][2]; //协方差矩阵
     float K[2]; //卡尔曼增益，是2维的
+
     
 
 }Kalman;
+
+typedef struct
+{
+    float roll;
+    float pitch;
+    float yaw;
+
+}angle;
+
+angle angle_from_acc;
+angle angle_from_gyro;
 
 float Matrix_plus_2_2(float A[2][2], float B[2][2])
 {
@@ -32,6 +40,7 @@ float Matrix_plus_2_2(float A[2][2], float B[2][2])
 
     return C;
 }
+
 
 float Matrix_minus_2_2(float A[2][2], float B[2][2])
 {
@@ -55,6 +64,15 @@ float Matrix_multiply_2_2(float A[2][2], float B[2][2])
     return C;
 }
 
+float Matrix_multiple_2_1(float A[2][2], float B[2][1])
+{
+    float C[2][1];
+    C[0][0] = A[0][0] * B[0][0] + A[0][1] * B[1][0];
+    C[1][0] = A[1][0] * B[0][0] + A[1][1] * B[1][0];
+
+    return C;
+}
+
 float Matrix_inverse_2_2(float A[2][2])
 {
     float det = A[0][0] * A[1][1] - A[0][1] * A[1][0];
@@ -63,6 +81,17 @@ float Matrix_inverse_2_2(float A[2][2])
     C[0][1] = -A[0][1] / det;
     C[1][0] = -A[1][0] / det;
     C[1][1] = A[0][0] / det;
+
+    return C;
+}
+
+float Matrix_transpose_2_2(float A[2][2])
+{
+    float C[2][2];
+    C[0][0] = A[0][0];
+    C[0][1] = A[1][0];
+    C[1][0] = A[0][1];
+    C[1][1] = A[1][1];
 
     return C;
 }
@@ -81,7 +110,10 @@ void kalman_init(Kalman *kalman)
     kalman->P[1][1] = 1.0;
 }
 
-void kalman_update(Kalman *kalman, float newAngle, float newRate, float dt)
+void kalman_predict(Kalman *kalman, angle angle_from_acc, angle angle_from_gyro, float dt)
 {
-    kalman->rate = newRate - kalman->bias;
-    kalman->angle += dt * kalman->rate;
+    float kalman_x_priori;
+    float F[2][2];
+    F = kalman->F;
+
+}

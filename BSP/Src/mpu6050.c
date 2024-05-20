@@ -119,6 +119,24 @@ void MPU6050_GetAngle_Acce(I2C_HandleTypeDef *hi2c, float* pitch, float* roll) {
 
 // }
 
+void MPU6050_GetGyro_Gyro(I2C_HandleTypeDef *hi2c,float* pitch, float* roll, float* yaw ,float* gyroX, float* gyroY, float* gyroZ){
+    int16_t gyro[3];
+    MPU6050_ReadAccelGyro(hi2c, NULL, gyro);
+    const float DEG_TO_RAD = M_PI / 180.0;  // 度转弧度系数
+    const float RAD_TO_DEG = 180.0 / M_PI;  // 弧度转度系数
+
+    // 从陀螺仪读取的原始数据转换为度
+    *gyroX = gyro[0] * RAD_TO_DEG;
+    *gyroY = gyro[1] * RAD_TO_DEG;
+    *gyroZ = gyro[2] * RAD_TO_DEG;
+
+    // 计算基于大地坐标系的角速度
+    *gyroX = *gyroX + *gyroY * sin(*roll * DEG_TO_RAD) * tan(*pitch * DEG_TO_RAD) + *gyroZ * cos(*roll * DEG_TO_RAD) * tan(*pitch * DEG_TO_RAD);
+    *gyroY = *gyroY * cos(*roll * DEG_TO_RAD) - *gyroZ * sin(*roll * DEG_TO_RAD);
+    *gyroZ = *gyroY * sin(*roll * DEG_TO_RAD) / cos(*pitch * DEG_TO_RAD) + *gyroZ * cos(*roll * DEG_TO_RAD) / cos(*pitch * DEG_TO_RAD);
+    
+}
+
 void MPU6050_GetAngle_Gyro(I2C_HandleTypeDef *hi2c, float* pitch, float* roll, float* yaw, float dt) {
     int16_t gyro[3];
     MPU6050_ReadAccelGyro(hi2c, NULL, gyro);
