@@ -9,6 +9,11 @@
         "C_Cpp.default.configurationProvider": "cl.eide",
         "C_Cpp.errorSquiggles": "disabled",
         "files.associations": {
+            "*.tcc": "cpp",
+            "istream": "cpp",
+            "ostream": "cpp",
+            "random": "cpp",
+            "xiosbase": "cpp",
             ".eideignore": "ignore",
             "*.a51": "a51",
             "*.h": "c",
@@ -18,7 +23,8 @@
             "*.c++": "cpp",
             "*.cpp": "cpp",
             "*.cxx": "cpp",
-            "*.cc": "cpp"
+            "*.cc": "cpp",
+            "cmath": "cpp"
         },
         "[yaml]": {
             "editor.insertSpaces": true,
